@@ -1,0 +1,82 @@
+INSTALLATION 
+############
+
+
+## Twitter sign up
+1. Create your Bot's account in Twitter (http://twitter.com)
+2. Register your application in http://twitter.com/apps
+
+# Bot installation
+3. Copy all files in /opt/TwitBot. If you change this path
+   remember to edit include/config.php and include/Log/Log.class.php
+
+# Bot configuration
+4. Rename include/config.sample.php to include/config.php
+5. Edit in include/config.php you bot's name as appears in Twitter
+6. Edit in include/config.php your OAuth keys
+7. Rename db/bot.sample.db3 to db/bot.db3
+
+## Link your Bot with your Twitter account
+8. Make sure you are signed with your Bot's account in Twitter
+9. Execute the next instructions:
+   # cd Twitter-Bot/include
+   # php OAuthApi.php register
+     ... You will get an authentication URL        ...
+     ... Access to that URL and authorize the app  ...
+     ... Take note of the PIN code                 ...
+   # php OAuthApi.php validate <code>
+10. If you dont want your Bot start analyzing followers, mentions, etc
+    from the begining of the times, you should initialize the database
+    # php OAuthApi.php initdb
+
+Note. If register process fails, repeat all steps from 6.
+
+## Automatic execution
+11. Add the next line to /etc/crontab and restart CRON
+*/2 *	* * *	root	cd <bot_path> && /usr/bin/php main.php
+
+Note. I assume you are using Linux. If you use Windows or another OS 
+   review how to schedule commands automatically like CRON does
+
+
+
+
+ACTIONS
+#######
+
+All actions are coded in include/Actions/ folder.
+
+To enable the actions, you must add them to $actions array in
+include/config.php. All actions will be executed in that order.
+
+Every action needs to extend Action class (Action.class.php) and have 
+the doAction() function.
+
+Every Action class instance has two variables:
+  - Bot object executing the action
+  - Current heartbeat
+
+If you need to access to database, you can get the object using the getDbObject()
+method defined in Bot.class.php.
+
+If you need to update any token, you can use the setToken()/getToken() methods
+defined in Bot.class.php.
+
+Sample Action to retweet, every 5 heartbeats, its last mention:
+
+file: doAlert.class.php
+//----------- START -------------//
+<?php
+require_once ("Action.class.php");
+class doAlert extends Action {
+	function doAction() {
+		if ($this->heartbeat % 5) {
+			Logger::instance()->log("Retweeting my last mention", 4);
+			$mention = $this->bot->getMentions(1);
+			$this->bot->doRT($mention->text);
+		}
+	}
+}
+?>
+//------------ END --------------//
+

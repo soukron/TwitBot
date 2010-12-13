@@ -1,0 +1,6 @@
+db/bot.db3
+include/config.php
+logs/*
+!.gitignore
+
+
