@@ -15,8 +15,8 @@ class getNewMentions extends Action {
 	function doAction() {
 		$mentions = $this->bot->getMentions();
 		if(count($mentions)) {
-			Logger::instance()->log("Agregando menciones en la base de datos.", 4);
-                        $db = $this->bot->getDbObject();
+			Logger::instance()->log("Adding mentions to database", 4);
+			$db = $this->bot->getDbObject();
 			$insert = $db->prepare("INSERT INTO mentions(timestamp, data) VALUES (DATETIME('NOW'), ?)");
 
 			foreach ($mentions as $mention)

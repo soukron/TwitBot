@@ -28,7 +28,7 @@ class BotActions extends Bot {
 		foreach ($this->actions as $action) {
 			//if (file_exists("Actions/".$action.".class.php")) {
 				require_once("Actions/".$action.".class.php");
-				Logger::instance()->log("Calling $action.", 2);
+				Logger::instance()->log("Calling $action", 2);
 				$action = new $action($this, $heartbeat);
 				$action->doAction();
 			//}
